@@ -81,7 +81,7 @@ export default function TicketCalculator() {
             variant="ghost"
             size="icon"
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="rounded-full hover:bg-accent"
+            className="rounded-full hover:bg-accent cursor-pointer hover:scale-110 transition-all duration-300"
           >
             {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
@@ -148,7 +148,7 @@ export default function TicketCalculator() {
                   <Activity className="h-5 w-5 text-blue-500 group-hover:scale-125 transition-transform" />
                 </CardHeader>
                 <CardContent className="p-8 pt-4">
-                  <div className="text-4xl sm:text-5xl xl:text-6xl font-mono font-black tracking-tighter tabular-nums break-all">
+                  <div className="text-2xl sm:text-3xl xl:text-4xl font-mono font-black tracking-tighter tabular-nums">
                     {nmPoints.toLocaleString("id-ID")}
                   </div>
                 </CardContent>
@@ -161,7 +161,7 @@ export default function TicketCalculator() {
                   <Wallet className="h-5 w-5 text-amber-500 group-hover:scale-125 transition-transform" />
                 </CardHeader>
                 <CardContent className="p-8 pt-4">
-                  <div className="text-4xl sm:text-5xl xl:text-6xl font-mono font-black tracking-tighter tabular-nums break-all">
+                  <div className="text-2xl sm:text-3xl xl:text-4xl font-mono font-black tracking-tighter tabular-nums">
                     {gold.toLocaleString("id-ID")}
                   </div>
                 </CardContent>
