@@ -13,6 +13,7 @@ export default function TicketCalculator() {
   const [isDarkMode, setIsDarkMode] = useState(true)
   const [nmPoints, setNmPoints] = useState<number>(0)
   const [gold, setGold] = useState<number>(0)
+  const [secondsPerRun, setSecondsPerRun] = useState<string>("120")
   const [estimation, setEstimation] = useState<{
     seconds: number
     minutes: string
@@ -31,13 +32,14 @@ export default function TicketCalculator() {
     }
   }, [isDarkMode])
 
-  const calculateResults = (value: string) => {
+  const calculateResults = (value: string, perRunSeconds?: string) => {
     const ticketCount = Number.parseInt(value) || 0
     const currentNmPoints = ticketCount * 6000
     setNmPoints(currentNmPoints)
     setGold(ticketCount * 1800)
 
-    const totalSeconds = (ticketCount / 50) * 130
+    const runTime = Number.parseInt(perRunSeconds ?? secondsPerRun) || 120
+    const totalSeconds = (ticketCount / 50) * runTime
     const minutes = (totalSeconds / 60).toFixed(2)
     const hours = (totalSeconds / 3600).toFixed(2)
 
@@ -60,6 +62,12 @@ export default function TicketCalculator() {
     const value = e.target.value
     setTickets(value)
     calculateResults(value)
+  }
+
+  const handleSecondsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSecondsPerRun(value)
+    calculateResults(tickets, value)
   }
 
   return (
@@ -175,32 +183,58 @@ export default function TicketCalculator() {
 
                 <div className="space-y-6">
                   <Card className="bg-card border-2 border-border shadow-sm">
-                    <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                          <Clock className="h-5 w-5" />
-                          <span className="text-sm font-bold uppercase tracking-widest">Waktu Mendapatkan</span>
+                    <div className="p-8 flex flex-col gap-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                            <Clock className="h-5 w-5" />
+                            <span className="text-sm font-bold uppercase tracking-widest">Waktu Mendapatkan</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground max-w-xs">
+                            Dihitung berdasarkan 50 tiket per {secondsPerRun || 120} detik
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground max-w-xs">
-                          Dihitung berdasarkan 50 tiket per 130 detik
-                        </p>
+                        <div className="grid grid-cols-3 gap-8 md:gap-16">
+                          <TimeMetric
+                            label="Detik"
+                            value={estimation.seconds}
+                            color="text-emerald-600 dark:text-emerald-400"
+                          />
+                          <TimeMetric
+                            label="Menit"
+                            value={estimation.minutes}
+                            color="text-emerald-600 dark:text-emerald-400"
+                          />
+                          <TimeMetric
+                            label="Jam"
+                            value={estimation.hours}
+                            color="text-emerald-600 dark:text-emerald-400"
+                          />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-8 md:gap-16">
-                        <TimeMetric
-                          label="Detik"
-                          value={estimation.seconds}
-                          color="text-emerald-600 dark:text-emerald-400"
-                        />
-                        <TimeMetric
-                          label="Menit"
-                          value={estimation.minutes}
-                          color="text-emerald-600 dark:text-emerald-400"
-                        />
-                        <TimeMetric
-                          label="Jam"
-                          value={estimation.hours}
-                          color="text-emerald-600 dark:text-emerald-400"
-                        />
+
+                      {/* Input waktu per run */}
+                      <div className="border-t border-border pt-6">
+                        <Label
+                          htmlFor="secondsPerRun"
+                          className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400 mb-3 block"
+                        >
+                          Waktu per Run (Detik)
+                        </Label>
+                        <div className="flex items-center gap-4">
+                          <Input
+                            id="secondsPerRun"
+                            type="number"
+                            placeholder="120"
+                            value={secondsPerRun}
+                            onChange={handleSecondsChange}
+                            className="h-14 bg-background border-2 border-border focus:border-emerald-500 text-2xl font-mono font-bold rounded-xl transition-all placeholder:text-muted-foreground/30 focus-visible:ring-0 focus-visible:ring-offset-0 w-32"
+                          />
+                          <div className="text-sm text-muted-foreground space-y-1">
+                            <p className="font-medium">= {((Number.parseInt(secondsPerRun) || 120) / 60).toFixed(2)} menit per run</p>
+                            <p className="text-xs italic">*Default: 2 menit (120 detik)</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </Card>
