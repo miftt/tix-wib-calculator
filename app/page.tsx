@@ -23,6 +23,8 @@ export default function TicketCalculator() {
     minutes: string
     hours: string
   }>({ minutes: "0.00", hours: "0.00" })
+  const [estimatedFinishTime, setEstimatedFinishTime] = useState<string>("-")
+  const [spendFinishTime, setSpendFinishTime] = useState<string>("-")
 
   useEffect(() => {
     if (isDarkMode) {
@@ -56,6 +58,31 @@ export default function TicketCalculator() {
       minutes: spendMinutes.toFixed(2),
       hours: spendHours.toFixed(2),
     })
+
+    // Calculate estimated finish time
+    if (ticketCount > 0) {
+      const now = new Date()
+      const finishTime = new Date(now.getTime() + totalSeconds * 1000)
+      const hours = finishTime.getHours().toString().padStart(2, '0')
+      const mins = finishTime.getMinutes().toString().padStart(2, '0')
+      const secs = finishTime.getSeconds().toString().padStart(2, '0')
+      setEstimatedFinishTime(`${hours}:${mins}:${secs}`)
+    } else {
+      setEstimatedFinishTime("-")
+    }
+
+    // Calculate spend finish time
+    if (ticketCount > 0) {
+      const now = new Date()
+      const spendSeconds = spendMinutes * 60
+      const spendFinish = new Date(now.getTime() + spendSeconds * 1000)
+      const sHours = spendFinish.getHours().toString().padStart(2, '0')
+      const sMins = spendFinish.getMinutes().toString().padStart(2, '0')
+      const sSecs = spendFinish.getSeconds().toString().padStart(2, '0')
+      setSpendFinishTime(`${sHours}:${sMins}:${sSecs}`)
+    } else {
+      setSpendFinishTime("-")
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,6 +240,23 @@ export default function TicketCalculator() {
                         </div>
                       </div>
 
+                      {/* Estimated Finish Time */}
+                      <div className="border-t border-border pt-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="space-y-1">
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">
+                              Estimasi Selesai
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Waktu sekarang + estimasi waktu
+                            </p>
+                          </div>
+                          <div className="text-3xl md:text-4xl font-mono font-black tracking-tighter tabular-nums text-cyan-600 dark:text-cyan-400">
+                            {estimatedFinishTime}
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Input waktu per run */}
                       <div className="border-t border-border pt-6">
                         <Label
@@ -240,27 +284,46 @@ export default function TicketCalculator() {
                   </Card>
 
                   <Card className="bg-card border-2 border-border shadow-sm">
-                    <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
-                          <Zap className="h-5 w-5" />
-                          <span className="text-sm font-bold uppercase tracking-widest">Waktu Menghabiskan</span>
+                    <div className="p-8 flex flex-col gap-6">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                            <Zap className="h-5 w-5" />
+                            <span className="text-sm font-bold uppercase tracking-widest">Waktu Menghabiskan</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground max-w-xs">
+                            Dihitung berdasarkan 3.000.000 poin per jam
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground max-w-xs">
-                          Dihitung berdasarkan 3.000.000 poin per jam
-                        </p>
+                        <div className="grid grid-cols-2 gap-8 md:gap-16">
+                          <TimeMetric
+                            label="Menit"
+                            value={spendEstimation.minutes}
+                            color="text-purple-600 dark:text-purple-400"
+                          />
+                          <TimeMetric
+                            label="Jam"
+                            value={spendEstimation.hours}
+                            color="text-purple-600 dark:text-purple-400"
+                          />
+                        </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-8 md:gap-16">
-                        <TimeMetric
-                          label="Menit"
-                          value={spendEstimation.minutes}
-                          color="text-purple-600 dark:text-purple-400"
-                        />
-                        <TimeMetric
-                          label="Jam"
-                          value={spendEstimation.hours}
-                          color="text-purple-600 dark:text-purple-400"
-                        />
+
+                      {/* Estimated Spend Finish Time */}
+                      <div className="border-t border-border pt-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="space-y-1">
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-pink-600 dark:text-pink-400">
+                              Estimasi Selesai Spend
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Waktu sekarang + waktu menghabiskan
+                            </p>
+                          </div>
+                          <div className="text-3xl md:text-4xl font-mono font-black tracking-tighter tabular-nums text-pink-600 dark:text-pink-400">
+                            {spendFinishTime}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </Card>
